@@ -20,9 +20,14 @@
     </style>
   </head>
   <body>
-    <video width="0" height="0" src="" id="video"></video>
-    <canvas id="canvas" width="0" height="0"></canvas>
-    <button onclick="video.play()">Play</button>
+    <video width="0" height="0" src="" id="video" autoplay></video>
+    <canvas id="canvas" width="0" height="0" style="display: none"></canvas>
+    <button
+      onclick="play()
+    "
+    >
+      Play
+    </button>
     <script>
       const video = document.querySelector('#video');
       const canvas = document.querySelector('#canvas');
@@ -43,6 +48,10 @@
           chromaKey();
         }, 40);
       });
+      function play() {
+        video.play();
+        canvas.style.display = 'block';
+      }
 
       function chromaKey() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
