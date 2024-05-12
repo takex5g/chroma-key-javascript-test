@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chroma Key</title>
+    <style>
+      #main {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+      canvas {
+        /* background-image: url(pokemon.jpg);
+        background-size: cover;
+        background-position: center; */
+        background-color: transparent;
+      }
+      .splash {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main" style="display: none">
+      <video width="0" height="0" src="" id="video" autoplay></video>
+      <div style="position: relative">
+        <canvas id="canvas" width="0" height="0"></canvas>
+
+        <video
+          src="movie.mp4"
+          autoplay
+          loop
+          muted
+          style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 10px);
+            object-fit: cover;
+            z-index: -1;
+          "
+        ></video>
+      </div>
+      <!-- 閾値を調整するスライダー -->
+      <label for="threshold"
+        >Threshold:
+        <span id="thresholdValue">170</span>
+      </label>
+      <input
+        type="range"
+        min="0"
+        max="255"
+        value="170"
+        id="threshold"
+        onchange="changeThreshold()"
+      />
+    </div>
+    <div class="splash">
+      <button
+        onclick="play()
+    "
+      >
+        Play
+      </button>
+    </div>
+    <script>
+      const video = document.querySelector('#video');
+      const canvas = document.querySelector('#canvas');
+      const ctx = canvas.getContext('2d');
+      let threshold = 170;
+
+      navigator.mediaDevices
+        .getUserMedia({
+          video: { facingMode: 'environment' },
+        })
+        .then((stream) => {
+          video.srcObject = stream;
+        });
+
+      video.addEventListener('loadeddata', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        setInterval(() => {
+          chromaKey();
+        }, 40);
+      });
+      function play() {
+        video.play();
+        document.getElementById('main').style.display = 'flex';
+        document.querySelector('.splash').style.display = 'none';
+      }
+
+      //スライダーが動いた時に呼び出される関数
+      function changeThreshold() {
+        threshold = document.querySelector('#threshold').value;
+        document.querySelector('#thresholdValue').textContent = threshold;
+      }
+
+      function chromaKey() {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const dataLength = imageData.data.length / 4;
+        for (let i = 0; i < dataLength; i++) {
+          const offset = i * 4;
+          const red = imageData.data[offset + 0];
+          const green = imageData.data[offset + 1];
+          const blue = imageData.data[offset + 2];
+
+          if (blue > threshold && blue > red && blue > green) {
+            imageData.data[offset + 3] = 0;
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+      }
+    </script>
+  </body>
+</html>
