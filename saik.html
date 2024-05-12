@@ -28,7 +28,7 @@
   </head>
   <body>
     <div id="main" style="display: none">
-      <video width="0" height="0" src="" id="video" autoplay></video>
+      <video width="0" height="0" src="" id="camera" autoplay></video>
       <div style="position: relative">
         <canvas id="canvas" width="0" height="0"></canvas>
 
@@ -66,14 +66,14 @@
     </div>
     <div class="splash">
       <button
-        onclick="play()
+        onclick="canvasPlay()
     "
       >
         Play
       </button>
     </div>
     <script>
-      const video = document.querySelector('#video');
+      const video = document.querySelector('#camera');
       const canvas = document.querySelector('#canvas');
       const ctx = canvas.getContext('2d');
       let threshold = 170;
@@ -93,7 +93,7 @@
           chromaKey();
         }, 40);
       });
-      function play() {
+      function canvasPlay() {
         video.play();
         document.getElementById('main').style.display = 'flex';
         document.querySelector('.splash').style.display = 'none';
